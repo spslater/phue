@@ -46,7 +46,7 @@ def is_string(data):
     if PY3K:
         return isinstance(data, str)
     else:
-        return isinstance(data, str) or isinstance(data, unicode)  # noqa
+        return isinstance(data, (str,unicode)) # noqa
 
 def encodeString(string):
     """Utility method to encode strings as utf-8."""
@@ -609,7 +609,7 @@ class Bridge(object):
             self.config_file_path = config_file_path
         elif os.getenv(USER_HOME) is not None and os.access(os.getenv(USER_HOME), os.W_OK):
             self.config_file_path = os.path.join(os.getenv(USER_HOME), '.python_hue')
-        elif 'iPad' in platform.machine() or 'iPhone' in platform.machine() or 'iPad' in platform.machine():
+        elif 'iPad' in platform.machine() or 'iPhone' in platform.machine():
             self.config_file_path = os.path.join(os.getenv(USER_HOME), 'Documents', '.python_hue')
         else:
             self.config_file_path = os.path.join(os.getcwd(), '.python_hue')
@@ -646,9 +646,9 @@ class Bridge(object):
         connection = httplib.HTTPConnection(self.ip, timeout=10)
 
         try:
-            if mode == 'GET' or mode == 'DELETE':
+            if mode in ('GET', 'DELETE'):
                 connection.request(mode, address)
-            if mode == 'PUT' or mode == 'POST':
+            if mode in ('PUT', 'POST'):
                 connection.request(mode, address, json.dumps(data))
 
             logger.debug("{0} {1} {2}".format(mode, address, str(data)))
@@ -1047,7 +1047,7 @@ class Bridge(object):
             return self.request('GET', '/api/' + self.username + '/groups/')
         if parameter is None:
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))
-        elif parameter == 'name' or parameter == 'lights'  or parameter == 'type':
+        elif parameter in ('name', 'lights', 'type'):
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))[parameter]
         else:
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))['action'][parameter]
@@ -1063,7 +1063,7 @@ class Bridge(object):
 
         if isinstance(parameter, dict):
             data = parameter
-        elif parameter == 'lights' and (isinstance(value, list) or isinstance(value, int)):
+        elif parameter == 'lights' and isinstance(value, (list,int)):
             if isinstance(value, int):
                 value = [value]
             data = {parameter: [str(x) for x in value]}
@@ -1087,7 +1087,7 @@ class Bridge(object):
             if converted_group is False:
                 logger.error('Group name does not exist')
                 return
-            if parameter == 'name' or parameter == 'lights' or parameter == 'type':
+            if parameter in ('name', 'lights', 'type'):
                 result.append(self.request('PUT', '/api/' + self.username + '/groups/' + str(converted_group), data))
             else:
                 result.append(self.request('PUT', '/api/' + self.username + '/groups/' + str(converted_group) + '/action', data))
