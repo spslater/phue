@@ -1047,7 +1047,7 @@ class Bridge(object):
             return self.request('GET', '/api/' + self.username + '/groups/')
         if parameter is None:
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))
-        elif parameter == 'name' or parameter == 'lights':
+        elif parameter == 'name' or parameter == 'lights'  or parameter == 'type':
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))[parameter]
         else:
             return self.request('GET', '/api/' + self.username + '/groups/' + str(group_id))['action'][parameter]
@@ -1087,7 +1087,7 @@ class Bridge(object):
             if converted_group is False:
                 logger.error('Group name does not exist')
                 return
-            if parameter == 'name' or parameter == 'lights':
+            if parameter == 'name' or parameter == 'lights' or parameter == 'type':
                 result.append(self.request('PUT', '/api/' + self.username + '/groups/' + str(converted_group), data))
             else:
                 result.append(self.request('PUT', '/api/' + self.username + '/groups/' + str(converted_group) + '/action', data))
